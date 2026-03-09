@@ -14,3 +14,9 @@ Pode-se também criar um diretório "canvas", que seria descrito da seguinte for
 	* **BusinessModelCanvas.pdf**: Canvas do modelo de negócios.
 
 Assim, sucessivamente para outros artefatos como `processos` e `DER`, etc.
+
+# Vídeos acompanhamento TCC II
+
+Link dos vídeos das atividades:
+
+A1 - https://www.youtube.com/watch?v=e0z5FD0PjsU
