@@ -109,3 +109,21 @@ td {
   padding: 10px;
   border-bottom: 1px solid #e5e7eb;
 }
+.success {
+  color: #1b7f3a;
+  font-weight: 600;
+}
+
+.validation-box {
+  margin-top: 18px;
+}
+
+.stat span {
+  color: #555;
+  font-size: 14px;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

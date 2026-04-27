@@ -9,3 +9,4 @@ pydantic-settings
 email-validator
 openpyxl
 pandas
+pytest
