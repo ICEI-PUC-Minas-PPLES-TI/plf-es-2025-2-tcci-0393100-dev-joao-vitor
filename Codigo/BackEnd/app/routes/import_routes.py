@@ -54,6 +54,7 @@ async def upload_excel(
             "registros_invalidos": result["registros_invalidos"],
             "resumo_validacao": result["resumo_validacao"],
             "colunas_processadas": result["colunas"],
+            "registros_processados": result["registros"][:10],
         }
 
     except ValueError as exc:

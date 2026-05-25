@@ -10,12 +10,13 @@ export default function Layout({ children }) {
       <aside className="sidebar">
         <h2>DashVendas</h2>
 
-        <nav>
+       <nav className="sidebar-nav">
           <Link to="/">Dashboard</Link>
           {(user?.role === "analista" || user?.role === "administrador") && (
             <Link to="/imports">Importar Excel</Link>
           )}
           {user?.role === "administrador" && <Link to="/users">Usuários</Link>}
+          <Link to="/kpis">KPIs</Link>
         </nav>
 
         <div className="sidebar-footer">

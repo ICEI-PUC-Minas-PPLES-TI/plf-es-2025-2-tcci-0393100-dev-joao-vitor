@@ -127,3 +127,99 @@ button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header p {
+  color: #666;
+}
+
+.alert {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.alert.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.alert.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.stat-card {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.stat-card span {
+  color: #666;
+  font-size: 14px;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-top: 8px;
+}
+
+.stat-card.success {
+  background: #d1fae5;
+}
+
+.stat-card.error {
+  background: #fee2e2;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status.processado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status.processado_com_alertas {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.erro {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.status.encontrado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status.nao_encontrado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-grid input {
+  padding: 10px;
+}

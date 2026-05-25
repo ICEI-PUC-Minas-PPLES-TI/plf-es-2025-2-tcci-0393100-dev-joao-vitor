@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import ImportPage from "./pages/ImportPage";
 import UserPage from "./pages/UserPage";
+import KpiPage from "./pages/KpiPage";
 
 export default function App() {
   return (
@@ -40,6 +41,9 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/kpis" 
+          element={
+          <KpiPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

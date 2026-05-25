@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.auth_routes import router as auth_router
 from app.routes.dashboard_routes import router as dashboard_router
 from app.routes.import_routes import router as import_router
+from app.routes.kpi_routes import router as kpi_router
+from app.routes.meta_routes import router as meta_router
 
 app = FastAPI(title="DashVendas API", version="0.1.0")
 
@@ -17,6 +19,8 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(import_router)
+app.include_router(kpi_router)
+app.include_router(meta_router)
 
 
 @app.get("/")
