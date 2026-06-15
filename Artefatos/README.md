@@ -69,10 +69,4 @@
 |-----------|------------|
 | [Projeto-PreBanca_Atividade_A6.pdf](./Projeto-PreBanca_Atividade_A6.pdf) | Documento da Pré-Banca. |
 | [Projeto-Final_Atividade_A8.pdf.docx.pdf](./Projeto-Final_Atividade_A8.pdf.docx.pdf) | Documento final do projeto. |
-### Links dos vídeos
-
-- A1: https://youtu.be/e0z5FD0PjsU
-- A2: https://youtu.be/722HvunYEes
-- A3: https://youtu.be/K5T8apYePnc
-- A4: https://youtu.be/RN4SRUrtVeY
 

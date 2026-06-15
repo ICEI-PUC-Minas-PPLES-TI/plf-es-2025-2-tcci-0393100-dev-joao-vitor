@@ -17,6 +17,32 @@ Entre os principais objetivos do projeto está a automação da relação entre 
 * Leonardo Vilela Cardoso
 * Raphael Ramos Dias Costa
 
+## Orientador TCCII
+
+*Marco Rodrigo Costa
+
 ## Instruções de utilização
 
-[Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.]
+### Configuração .env
+
+* Adicionar o connection string e o token da OpenAI api
+
+### Comandos para rodar o BackEnd
+
+Com o terminal aberto em Codigo/BackEnd
+* py -m venv .venv
+* .venv\Scripts\activate
+* pip install -r requirements.txt
+* uvicorn app.main:app --reload
+
+### Comandos para rodar o FrontEnd
+
+Com o terminal aberto em Codigo/FrontEnd
+* npm install
+* npm run dev
+
+### Comando rodar testes
+
+Com o terminal aberto em Codigo/BackEnd
+
+* pytest

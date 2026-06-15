@@ -1,3 +1,12 @@
-# Código do Projeto
+# DashVendas — Código do Sistema
 
-Mantenha neste diretório todo o código do projeto. Se necessário, descreva neste arquivo aspectos relevantes da estrutura de diretórios criada para organização do código.
+O sistema está dividido em dois módulos independentes:
+
+```
+Codigo/
+├── BackEnd/    API REST em FastAPI + SQLite 
+└── Frontend/   SPA em React + Vite
+```
+
+---
+

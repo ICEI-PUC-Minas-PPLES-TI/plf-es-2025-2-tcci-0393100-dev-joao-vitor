@@ -1,5 +1,6 @@
 # Python
 venv/
+.venv/
 __pycache__/
 *.pyc
 .env
@@ -15,6 +16,17 @@ node_modules/
 *.log
 *.db
 *.sqlite3
+
+
+# Mantém os scripts de exemplo, mas ignora os dados sensíveis e as
+# planilhas geradas.
+Codigo/BackEnd/exemplos/dados_reais/*.xls
+Codigo/BackEnd/exemplos/dados_reais/*.xlsx
+Codigo/BackEnd/exemplos/dados_reais/*.csv
+Codigo/BackEnd/exemplos/*.xlsx
+
+# Relatórios gerados em tempo de execução
+Codigo/BackEnd/relatorios_gerados/*.csv
 
 # Build
 dist/

@@ -1,319 +1,395 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import api from "../api/client";
+import {
+  formatNumber,
+  formatPercent,
+  statusLabel,
+  formatDateTime,
+  errorMessage,
+} from "../utils/format";
+
+/* Importação de planilhas em 3 etapas (UC08, UC09, UC10).
+   Etapa 1 — Upload (CO09): envia o arquivo .xlsx.
+   Etapa 2 — Validação (CO10): valida estrutura e campos.
+   Etapa 3 — Cruzamento (CO11): casa produtos e consolida as vendas.
+   Acompanha o protótipo (Escolher arquivo → Importar → Validação). */
+
+const STEPS = [
+  { key: "upload", t: "1. Importar", d: "Enviar planilha .xlsx" },
+  { key: "validacao", t: "2. Validar", d: "Conferir estrutura e dados" },
+  { key: "cruzamento", t: "3. Cruzar", d: "Casar produtos e consolidar" },
+];
 
 export default function ImportPage() {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  const [imports, setImports] = useState([]);
-  const [uploadResult, setUploadResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const loadImports = async () => {
+  const [file, setFile] = useState(null);
+  const [importacao, setImportacao] = useState(null);
+  const [stepDone, setStepDone] = useState({ upload: false, validacao: false, cruzamento: false });
+  const [validacao, setValidacao] = useState(null);
+  const [cruzamento, setCruzamento] = useState(null);
+  const [itens, setItens] = useState([]);
+  const [historico, setHistorico] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const loadHistorico = async () => {
     try {
-      const { data } = await api.get("/dashboard/imports");
-      setImports(data);
-    } catch {
-      setMessage("Erro ao carregar importações.");
+      const { data } = await api.get("/imports");
+      setHistorico(data);
+    } catch (err) {
+      // histórico é complementar; não bloqueia o fluxo
     }
   };
 
   useEffect(() => {
-    loadImports();
+    loadHistorico();
   }, []);
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
+  const currentStep = !stepDone.upload
+    ? "upload"
+    : !stepDone.validacao
+    ? "validacao"
+    : "cruzamento";
 
-    setMessage("");
-    setUploadResult(null);
+  const resetFluxo = () => {
+    setFile(null);
+    setImportacao(null);
+    setStepDone({ upload: false, validacao: false, cruzamento: false });
+    setValidacao(null);
+    setCruzamento(null);
+    setItens([]);
+    setError("");
+    setSuccess("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
+  const handleFileChange = (event) => {
+    const selected = event.target.files?.[0] || null;
+    setFile(selected);
+    setError("");
+  };
+
+  const loadItens = async (importacaoId) => {
+    try {
+      const { data } = await api.get(`/imports/${importacaoId}/itens`);
+      setItens(data);
+    } catch (err) {
+      // itens são complementares
+    }
+  };
+
+  /* Etapa 1 — Upload */
+  const handleUpload = async (event) => {
+    event.preventDefault();
     if (!file) {
-      setMessage("Selecione um arquivo Excel.");
+      setError("Selecione um arquivo .xlsx para importar.");
       return;
     }
-
-    const formData = new FormData();
-    formData.append("arquivo", file);
-
+    setLoading(true);
+    setError("");
+    setSuccess("");
     try {
-      setLoading(true);
-
-      const { data } = await api.post(
-        "/imports/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setMessage(data.message);
-      setUploadResult(data);
-
-      await loadImports();
-
+      const formData = new FormData();
+      formData.append("arquivo", file);
+      const { data } = await api.post("/imports/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImportacao(data.importacao);
+      setStepDone({ upload: true, validacao: false, cruzamento: false });
+      setSuccess(`${data.message} (${data.total_registros} registros)`);
+      loadHistorico();
     } catch (err) {
-      setMessage(
-        err?.response?.data?.detail ||
-        "Erro ao realizar upload."
-      );
+      setError(errorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
-  const percentualSucesso = uploadResult
-    ? Math.round(
-        (uploadResult.total_validos /
-          uploadResult.total_registros) *
-          100
-      )
-    : 0;
+  /* Etapa 2 — Validação */
+  const handleValidar = async () => {
+    if (!importacao) return;
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const { data } = await api.post(`/imports/${importacao.id}/validar`);
+      setValidacao(data);
+      setImportacao(data.importacao);
+      setStepDone((prev) => ({ ...prev, validacao: true }));
+      setSuccess(data.resumo);
+      loadItens(importacao.id);
+      loadHistorico();
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const exportarResultadoCSV = () => {
-  if (!uploadResult) return;
-
-  const linhas = [
-    ["Tipo", "Linha", "Produto", "Status", "Confiança", "Erros"],
-  ];
-
-  uploadResult.registros_processados?.forEach((item) => {
-    linhas.push([
-      "Válido",
-      "",
-      item.produto,
-      item.status_cruzamento,
-      `${Math.round(item.confianca_cruzamento * 100)}%`,
-      "",
-    ]);
-  });
-
-  uploadResult.registros_invalidos?.forEach((item) => {
-    linhas.push([
-      "Inválido",
-      item.linha,
-      item.produto || "",
-      "",
-      "",
-      item.erros.join(" | "),
-    ]);
-  });
-
-  const csv = linhas.map((linha) => linha.join(";")).join("\n");
-
-  const blob = new Blob([csv], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "relatorio_importacao.csv";
-  link.click();
-
-  URL.revokeObjectURL(url);
-};
+  /* Etapa 3 — Cruzamento */
+  const handleCruzar = async () => {
+    if (!importacao) return;
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const { data } = await api.post(`/imports/${importacao.id}/cruzar`);
+      setCruzamento(data);
+      setImportacao(data.importacao);
+      setStepDone((prev) => ({ ...prev, cruzamento: true }));
+      setSuccess(data.resumo);
+      loadItens(importacao.id);
+      loadHistorico();
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Layout>
-      <div className="page-header">
-        <h1>Importação Inteligente</h1>
+    <Layout
+      title="Importação de Planilhas"
+      crumb="Operações"
+      intro="Importe os dados de vendas em três etapas: envio do arquivo, validação da estrutura e cruzamento de produtos com o catálogo interno."
+      actions={
+        (importacao || file) && (
+          <button className="btn btn-ghost btn-sm" onClick={resetFluxo}>
+            Nova importação
+          </button>
+        )
+      }
+    >
+      {error && <div className="note error">{error}</div>}
+      {success && <div className="note ok">{success}</div>}
 
-        <p>
-          Upload, validação automática, cruzamento de
-          produtos e auditoria de importações.
-        </p>
+      <div className="stepper">
+        {STEPS.map((step) => {
+          const cls = stepDone[step.key]
+            ? "done"
+            : currentStep === step.key
+            ? "current"
+            : "";
+          return (
+            <div className={`step ${cls}`} key={step.key}>
+              <div className="num">{stepDone[step.key] ? "✓" : STEPS.indexOf(step) + 1}</div>
+              <div className="txt">
+                <div className="t">{step.t}</div>
+                <div className="d">{step.d}</div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="card">
-        <h2>Enviar planilha Excel</h2>
+      {/* Etapa 1 — Upload */}
+      <div className="panel">
+        <div className="panel-head">
+          <h2>Etapa 1 · Enviar planilha</h2>
+          {importacao && <span className={`badge ${importacao.status}`}>{statusLabel(importacao.status)}</span>}
+        </div>
 
-        <form onSubmit={handleUpload}>
-          <input
-            type="file"
-            accept=".xlsx,.xls"
-            onChange={(e) =>
-              setFile(e.target.files?.[0] || null)
-            }
-          />
-
-          <button disabled={loading}>
-            {loading
-              ? "Processando..."
-              : "Importar planilha"}
-          </button>
-        </form>
-
-        {message && (
-          <div
-            className={
-              message.toLowerCase().includes("erro")
-                ? "alert error"
-                : "alert success"
-            }
-          >
-            {message}
-          </div>
+        {!stepDone.upload ? (
+          <form onSubmit={handleUpload}>
+            <label className="file-drop" htmlFor="file-input">
+              <div className="ico">⬆</div>
+              <div className="main">{file ? "Arquivo selecionado" : "Escolher arquivo .xlsx"}</div>
+              <div className="sub">
+                Colunas obrigatórias: data_venda, vendedor, regiao, produto, categoria,
+                quantidade, valor_unitario, valor_total
+              </div>
+              {file && <div className="file-chosen">{file.name}</div>}
+              <input
+                id="file-input"
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleFileChange}
+              />
+            </label>
+            <div style={{ marginTop: 16 }}>
+              <button type="submit" className="btn" disabled={loading || !file}>
+                {loading ? <span className="spinner" /> : "Importar planilha"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <p style={{ color: "var(--text-2)" }}>
+            Planilha <b>{importacao?.nome_arquivo}</b> importada. Prossiga para a validação.
+          </p>
         )}
       </div>
 
-      {uploadResult && (
-        <div className="card">
-
-          <h2>Resultado da importação</h2>
-          <button type="button" onClick={exportarResultadoCSV}>
-  Exportar relatório CSV
-</button>
-
-          <div className="stats-grid">
-
-            <div className="stat-card">
-              <span>Total</span>
-              <h3>{uploadResult.total_registros}</h3>
-            </div>
-
-            <div className="stat-card success">
-              <span>Válidos</span>
-              <h3>{uploadResult.total_validos}</h3>
-            </div>
-
-            <div className="stat-card error">
-              <span>Inválidos</span>
-              <h3>{uploadResult.total_invalidos}</h3>
-            </div>
-
-            <div className="stat-card">
-              <span>Sucesso</span>
-              <h3>{percentualSucesso}%</h3>
-            </div>
-
+      {/* Etapa 2 — Validação */}
+      {stepDone.upload && (
+        <div className="panel">
+          <div className="panel-head">
+            <h2>Etapa 2 · Validação</h2>
+            {!stepDone.validacao && (
+              <button className="btn btn-sm" onClick={handleValidar} disabled={loading}>
+                {loading ? <span className="spinner" /> : "Validar planilha"}
+              </button>
+            )}
           </div>
 
-          {uploadResult.registros_invalidos?.length > 0 && (
+          {validacao && (
             <>
-              <h3>Inconsistências encontradas</h3>
+              <div className="stat-mini">
+                <div className="s">
+                  <div className="v">{formatNumber(validacao.total_registros)}</div>
+                  <div className="l">Registros</div>
+                </div>
+                <div className="s ok">
+                  <div className="v">{formatNumber(validacao.total_validos)}</div>
+                  <div className="l">Válidos</div>
+                </div>
+                <div className="s danger">
+                  <div className="v">{formatNumber(validacao.total_invalidos)}</div>
+                  <div className="l">Inválidos</div>
+                </div>
+                <div className="s">
+                  <div className="v">
+                    {formatPercent(
+                      validacao.total_registros
+                        ? (validacao.total_validos / validacao.total_registros) * 100
+                        : 0,
+                      0
+                    )}
+                  </div>
+                  <div className="l">Aproveitamento</div>
+                </div>
+              </div>
 
-              <table>
-                <thead>
-                  <tr>
-                    <th>Linha</th>
-                    <th>Produto</th>
-                    <th>Erros</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {uploadResult.registros_invalidos.map(
-                    (item) => (
-                      <tr key={item.linha}>
-                        <td>{item.linha}</td>
-
-                        <td>
-                          {item.produto || "-"}
-                        </td>
-
-                        <td>
-                          {item.erros.join(", ")}
-                        </td>
+              {validacao.registros_invalidos?.length > 0 && (
+                <div className="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Linha</th>
+                        <th>Produto</th>
+                        <th>Inconsistências</th>
                       </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {validacao.registros_invalidos.map((r, idx) => (
+                        <tr key={idx}>
+                          <td className="num">{r.linha}</td>
+                          <td className="strong">{r.produto || "—"}</td>
+                          <td>
+                            {(r.erros || []).map((e, i) => (
+                              <span key={i} className="badge danger" style={{ marginRight: 4 }}>{e}</span>
+                            ))}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </>
           )}
-
-          {uploadResult.registros_processados?.length > 0 && (
-            <>
-              <h3>Produtos cruzados automaticamente</h3>
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>Produto da planilha</th>
-                    <th>Produto encontrado</th>
-                    <th>Status</th>
-                    <th>Confiança</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {uploadResult.registros_processados.map(
-                    (item, index) => (
-                      <tr key={index}>
-                        <td>{item.produto}</td>
-
-                        <td>
-                          {item.produto_cadastrado || "-"}
-                        </td>
-
-                        <td>
-                          <span
-                            className={`status ${item.status_cruzamento}`}
-                          >
-                            {item.status_cruzamento}
-                          </span>
-                        </td>
-
-                        <td>
-                          {Math.round(
-                            item.confianca_cruzamento * 100
-                          )}%
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
-            </>
-          )}
-
         </div>
       )}
 
-      <div className="card">
-        <h2>Histórico de importações</h2>
+      {/* Etapa 3 — Cruzamento */}
+      {stepDone.validacao && (
+        <div className="panel">
+          <div className="panel-head">
+            <h2>Etapa 3 · Cruzamento de produtos</h2>
+            {!stepDone.cruzamento && (
+              <button className="btn btn-sm" onClick={handleCruzar} disabled={loading}>
+                {loading ? <span className="spinner" /> : "Executar cruzamento"}
+              </button>
+            )}
+          </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Arquivo</th>
-              <th>Usuário</th>
-              <th>Status</th>
-              <th>Observação</th>
-              <th>Data/Hora</th>
-            </tr>
-          </thead>
+          {cruzamento && (
+            <>
+              <div className="stat-mini">
+                <div className="s">
+                  <div className="v">{formatNumber(cruzamento.total_itens)}</div>
+                  <div className="l">Itens válidos</div>
+                </div>
+                <div className="s ok">
+                  <div className="v">{formatNumber(cruzamento.encontrados)}</div>
+                  <div className="l">Encontrados</div>
+                </div>
+                <div className="s danger">
+                  <div className="v">{formatNumber(cruzamento.nao_encontrados)}</div>
+                  <div className="l">Não encontrados</div>
+                </div>
+                <div className="s">
+                  <div className="v">{formatPercent(cruzamento.criterio_similaridade_minima * 100, 0)}</div>
+                  <div className="l">Similaridade mín.</div>
+                </div>
+              </div>
 
-          <tbody>
-            {imports.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Linha</th>
+                      <th>Item da Planilha</th>
+                      <th>Produto Correspondente</th>
+                      <th className="num">Confiança</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(cruzamento.registros_processados || []).map((r, idx) => (
+                      <tr key={idx}>
+                        <td className="num">{r.linha}</td>
+                        <td className="strong">{r.produto}</td>
+                        <td>{r.produto_cadastrado || <span style={{ color: "var(--text-3)" }}>—</span>}</td>
+                        <td className="num">{formatPercent((r.confianca_cruzamento || 0) * 100, 0)}</td>
+                        <td><span className={`badge ${r.status_cruzamento}`}>{statusLabel(r.status_cruzamento)}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
-                <td>{item.nome_arquivo}</td>
-
-                <td>{item.usuario_nome}</td>
-
-                <td>
-                  <span
-                    className={`status ${item.status}`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-
-                <td>{item.observacao}</td>
-                <td>{item.created_at}</td>
+      {/* Histórico de importações */}
+      <div className="panel">
+        <div className="panel-head">
+          <h2>Histórico de Importações</h2>
+          <button className="btn btn-ghost btn-sm" onClick={loadHistorico}>Atualizar</button>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Arquivo</th>
+                <th>Responsável</th>
+                <th>Status</th>
+                <th>Data</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {historico.length === 0 ? (
+                <tr><td className="table-empty" colSpan={4}>Nenhuma importação registrada.</td></tr>
+              ) : (
+                historico.map((h) => (
+                  <tr key={h.id}>
+                    <td className="strong">{h.nome_arquivo}</td>
+                    <td>{h.usuario_nome}</td>
+                    <td><span className={`badge ${h.status}`}>{statusLabel(h.status)}</span></td>
+                    <td>{formatDateTime(h.created_at)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
     </Layout>
   );
 }
