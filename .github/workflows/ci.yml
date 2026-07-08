@@ -1,0 +1,39 @@
+name: CI - Testes Automatizados
+
+# Integração contínua do DashVendas.
+# Executa a suíte de testes do back-end (pytest) a cada push e pull
+# request nas branches principais, garantindo que alterações não
+# quebrem funcionalidades existentes.
+
+on:
+  push:
+    branches: [main, minha-branch]
+  pull_request:
+    branches: [main, minha-branch]
+
+jobs:
+  testes-backend:
+    name: Testes do Back-end (pytest)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Codigo/BackEnd
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar os testes
+        run: pytest -v

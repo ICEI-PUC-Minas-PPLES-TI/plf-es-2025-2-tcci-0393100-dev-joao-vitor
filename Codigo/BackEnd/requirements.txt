@@ -10,3 +10,8 @@ email-validator
 openpyxl
 pandas
 pytest
+httpx
+sqlalchemy
+xlrd
+python-dotenv
+psycopg2-binary
