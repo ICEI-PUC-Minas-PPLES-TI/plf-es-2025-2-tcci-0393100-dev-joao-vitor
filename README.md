@@ -9,7 +9,7 @@ Trabalho de Conclusão de Curso (TCC) em Engenharia de Software — PUC Minas.
 - **Repositório:** https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2025-2-tcci-0393100-dev-joao-vitor
 
 <p align="center">
-  <img src="Artefatos/telas/dashboard.png" alt="Dashboard do DashVendas" width="80%">
+  <img src="Artefatos/telas/Dashboard.png" alt="Dashboard do DashVendas" width="80%">
 </p>
 
 ---
@@ -27,6 +27,7 @@ Trabalho de Conclusão de Curso (TCC) em Engenharia de Software — PUC Minas.
 - [Testes automatizados](#testes-automatizados)
 - [Integração contínua (CI)](#integração-contínua-ci)
 - [Estrutura do repositório](#estrutura-do-repositório)
+- [Manual do usuário](#manual-do-usuário)
 - [Imagens da aplicação](#imagens-da-aplicação)
 - [Equipe e orientação](#equipe-e-orientação)
 - [Licença](#licença)
@@ -217,24 +218,30 @@ O repositório utiliza **GitHub Actions** para integração contínua. A cada `p
 │           ├── pages/        # Telas do sistema
 │           ├── components/   # Componentes reutilizáveis
 │           └── auth/         # Contexto de autenticação
-├── Documentacao/        # Documento de Projeto, Visão e demais artefatos
+├── Documentacao/        # Documento de Projeto, Visão, Manual do Usuário e demais artefatos
 ├── Divulgacao/          # Material de divulgação
 └── README.md
 ```
+
+## Manual do usuário
+
+O guia completo de uso do sistema, com o passo a passo de cada funcionalidade por
+perfil, está disponível em
+[`Documentacao/ManualDoUsuario.md`](Documentacao/ManualDoUsuario.md).
 
 ## Imagens da aplicação
 
 ### Autenticação e visão geral
 
 <p align="center">
-  <img src="Artefatos/telas/login.png" alt="Tela de Login" width="49%">
-  <img src="Artefatos/telas/dashboard.png" alt="Dashboard" width="49%">
+  <img src="Artefatos/telas/Login.png" alt="Tela de Login" width="49%">
+  <img src="Artefatos/telas/Dashboard.png" alt="Dashboard" width="49%">
 </p>
 
 ### Indicadores e desempenho individual
 
 <p align="center">
-  <img src="Artefatos/telas/indicadores.png" alt="Indicadores (KPIs)" width="49%">
+  <img src="Artefatos/telas/Indicadores.png" alt="Indicadores (KPIs)" width="49%">
   <img src="Artefatos/telas/MeuDesempenho.png" alt="Meu Desempenho (vendedor)" width="49%">
 </p>
 
@@ -243,14 +250,14 @@ O repositório utiliza **GitHub Actions** para integração contínua. A cada `p
 <p align="center">
   <img src="Artefatos/telas/Importação.png" alt="Importação de planilha" width="32%">
   <img src="Artefatos/telas/Validação.png" alt="Validação dos dados" width="32%">
-  <img src="Artefatos/telas/cruzamento.png" alt="Cruzamento de produtos" width="32%">
+  <img src="Artefatos/telas/Cruzamento.png" alt="Cruzamento de produtos" width="32%">
 </p>
 
 ### Metas e alertas
 
 <p align="center">
-  <img src="Artefatos/telas/metas.png" alt="Metas" width="49%">
-  <img src="Artefatos/telas/alertas.png" alt="Alertas" width="49%">
+  <img src="Artefatos/telas/Metas.png" alt="Metas" width="49%">
+  <img src="Artefatos/telas/Alertas.png" alt="Alertas" width="49%">
 </p>
 
 ### Assistente de IA
@@ -262,9 +269,9 @@ O repositório utiliza **GitHub Actions** para integração contínua. A cada `p
 ### Relatórios, gestão de usuários e auditoria
 
 <p align="center">
-  <img src="Artefatos/telas/relatorios.png" alt="Relatórios" width="32%">
-  <img src="Artefatos/telas/usuarios.png" alt="Gestão de usuários" width="32%">
-  <img src="Artefatos/telas/logs.png" alt="Auditoria (logs)" width="32%">
+  <img src="Artefatos/telas/Relatorios.png" alt="Relatórios" width="32%">
+  <img src="Artefatos/telas/Usuarios.png" alt="Gestão de usuários" width="32%">
+  <img src="Artefatos/telas/Logs.png" alt="Auditoria (logs)" width="32%">
 </p>
 
 ## Equipe e orientação
