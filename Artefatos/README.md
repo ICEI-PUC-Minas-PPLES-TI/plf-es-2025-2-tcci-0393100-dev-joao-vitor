@@ -18,7 +18,6 @@ Esta pasta reúne todos os artefatos produzidos durante o desenvolvimento do pro
 | **DocumentoProjetoAntigos** | Versões anteriores da documentação do projeto. |
 | **Dtos** | Diagramas e documentos relacionados aos DTOs utilizados na aplicação. |
 | **telas** | Capturas de tela do sistema desenvolvido. |
-| **Videos** | Vídeos de apresentação e demonstração do projeto. |
 | **Wireframes** | Protótipos e wireframes das interfaces. |
 
 ---
@@ -40,7 +39,6 @@ Artefatos
 ├── DocumentoProjetoAntigos
 ├── Dtos
 ├── telas
-├── Videos
 ├── Wireframes
 └── README.md
 ```
@@ -55,10 +53,5 @@ Artefatos
 
 ---
 
-### Links externos
 
-- [Vídeo A1 (YouTube)](https://youtu.be/e0z5FD0PjsU)
-- [Vídeo A2 (YouTube)](https://youtu.be/722HvunYEes)
-- [Vídeo A3 (YouTube)](https://youtu.be/K5T8apYePnc)
-- [Vídeo A4 (YouTube)](https://youtu.be/RN4SRUrtVeY)
 
