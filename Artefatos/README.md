@@ -53,7 +53,6 @@ Artefatos
 
 ---
 
-### Links externos
 
 - [Vídeo A1 (YouTube)](https://youtu.be/e0z5FD0PjsU)
 - [Vídeo A2 (YouTube)](https://youtu.be/722HvunYEes)
