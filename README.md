@@ -27,6 +27,7 @@ Trabalho de Conclusão de Curso (TCC) em Engenharia de Software — PUC Minas.
 - [Testes automatizados](#testes-automatizados)
 - [Integração contínua (CI)](#integração-contínua-ci)
 - [Estrutura do repositório](#estrutura-do-repositório)
+- [Manual do usuário](#manual-do-usuário)
 - [Imagens da aplicação](#imagens-da-aplicação)
 - [Equipe e orientação](#equipe-e-orientação)
 - [Licença](#licença)
@@ -217,10 +218,16 @@ O repositório utiliza **GitHub Actions** para integração contínua. A cada `p
 │           ├── pages/        # Telas do sistema
 │           ├── components/   # Componentes reutilizáveis
 │           └── auth/         # Contexto de autenticação
-├── Documentacao/        # Documento de Projeto, Visão e demais artefatos
+├── Documentacao/        # Documento de Projeto, Visão, Manual do Usuário e demais artefatos
 ├── Divulgacao/          # Material de divulgação
 └── README.md
 ```
+
+## Manual do usuário
+
+O guia completo de uso do sistema, com o passo a passo de cada funcionalidade por
+perfil, está disponível em
+[`Documentacao/ManualDoUsuario.md`](Documentacao/ManualDoUsuario.md).
 
 ## Imagens da aplicação
 
