@@ -27,3 +27,7 @@ Esta pasta reúne os documentos do projeto DashVendas.
 ### 6. Projeto Pré-Banca - Atividade A6
 - [Projeto-PreBanca_Atividade_A6.pdf](./Projeto-PreBanca_Atividade_A6.pdf)
   - Documento apresentado na pré-banca do projeto.
+    
+### 7. Termo de Compromisso
+- [Termo_de_Compromisso_João.pdf](./Termo_de_Compromisso_João.pdf)
+  - Documento de termo de compromisso.
